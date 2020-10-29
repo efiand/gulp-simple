@@ -1,0 +1,54 @@
+html {
+	min-width: 320px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: antialiased;
+	-webkit-tap-highlight-color: transparent;
+}
+
+body {
+	margin: 0;
+	overflow-y: scroll; // чтобы содержимое не скакало влево-вправо при быстрой смене страниц
+}
+
+a,
+button,
+input {
+	font: inherit;
+	text-decoration-skip-ink: none;
+	color: inherit;
+	background-color: transparent;
+	transition-property: color, opacity, background-color, border, box-shadow;
+	transition-duration: 0.3s;
+	transition-timing-function: ease-in-out;
+
+	&::-moz-focus-inner {
+		border: none;
+	}
+}
+
+button {
+	box-sizing: content-box;
+	cursor: pointer;
+	user-select: none;
+}
+
+input {
+	box-sizing: border-box;
+	width: 100%;
+	-webkit-text-fill-color: currentColor;
+	box-shadow: none;
+	appearance: none;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+svg {
+	fill: currentColor;
+}
+
+table {
+	border-collapse: collapse;
+}

@@ -1,0 +1,12 @@
+.DS_Store
+.idea
+.vscode
+*.log
+*.sublime*
+__MACOS*
+build
+node_modules
+npm-debug.*
+public
+Thumbs.db
+vendor
