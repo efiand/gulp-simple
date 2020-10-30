@@ -45,7 +45,8 @@
 	],
 	"browserslist": [
 		"last 6 version",
-		"not dead"
+		"not dead",
+    "not IE 11"
 	],
 	"stylelint": {
 		"extends": "pineglade-config/stylelint"
