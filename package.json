@@ -46,7 +46,7 @@
 	"browserslist": [
 		"last 6 version",
 		"not dead",
-    "not IE 11"
+		"not IE 11"
 	],
 	"stylelint": {
 		"extends": "pineglade-config/stylelint"
@@ -60,9 +60,5 @@
 	},
 	"lintspaces": {
 		"editorconfig": ".editorconfig"
-	},
-	"dependencies": {
-		"express": "4.17.1",
-		"twig": "1.15.2"
 	}
 }
