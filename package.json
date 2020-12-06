@@ -26,7 +26,7 @@
 		"gulp-webp": "4.0.1",
 		"imagemin-jpegoptim": "7.0.0",
 		"mqpacker": "7.0.0",
-		"pineglade-config": "0.1.0",
+		"pineglade-config": "0.1.2",
 		"postcss": "8.1.4",
 		"precommit": "1.2.2",
 		"stylelint": "13.7.2",
