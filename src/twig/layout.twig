@@ -4,16 +4,18 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Сборка</title>
-	<link rel="stylesheet" href="css/style.min.css">
+	<link rel="stylesheet" href="css/style.css">
 	<meta name="HandheldFriendly" content="True">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<link rel="preload" href="fonts/roboto.woff2" as="font" crossorigin="anonymous">
+	<link rel="preload" href="fonts/roboto-bold.woff2" as="font" crossorigin="anonymous">
 	<meta name="format-detection" content="telephone=no">
 </head>
-<body>
-	<main>
+<body class="page">
+	<header class="page__header"></header>
+	<main class="page__main">
 		{% block main %}{% endblock %}
 	</main>
-	<script src="js/script.min.js"></script>
+	<footer class="page__footer">&copy; pineglade</footer>
+	<script src="js/script.js"></script>
 </body>
 </html>

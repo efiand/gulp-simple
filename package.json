@@ -25,7 +25,7 @@
 		"gulp-webp": "4.0.1",
 		"imagemin-jpegoptim": "7.0.0",
 		"mqpacker": "7.0.0",
-		"pineglade-config": "0.1.4",
+		"pineglade-config": "0.1.5",
 		"postcss": "8.1.4",
 		"stylelint": "13.7.2",
 		"vinyl-named": "1.1.0",
