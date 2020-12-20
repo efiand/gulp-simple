@@ -1,3 +1,4 @@
+// Модули
 const { src, dest, watch, series, parallel } = require('gulp');
 const {
 	htmlhint,
@@ -14,22 +15,36 @@ const {
 	svgstore
 } = require('gulp-load-plugins')();
 const browserSync = require('browser-sync').create();
-const pkg = require('./package.json');
-const { codeguide, config } = require('pineglade-config');
+
+// Настройки
+const {
+	DEST,
+	ESLINT,
+	HTMLHINT,
+	HTMLMIN,
+	JPEGOPTIM,
+	LINTSPACES,
+	SERVER,
+	STYLELINT,
+	SVGO,
+	SVGSTORE,
+	WEBP,
+	WEBPACK
+} = require('pineglade-config').gulp;
 
 // Сборка HTML
 const html = () => src('src/twig/pages/**/*.twig')
 	.pipe(twig())
-	.pipe(htmlmin(config.htmlmin))
-	.pipe(dest('build'))
+	.pipe(htmlmin(HTMLMIN))
+	.pipe(dest(DEST))
 	.pipe(w3cHtmlValidator())
 	.pipe(w3cHtmlValidator.reporter());
 
 // Тестирование HTML
 const htmlTest = () => src('src/twig/**/*.twig')
-	.pipe(htmlhint(codeguide.htmlhint))
+	.pipe(htmlhint(HTMLHINT))
 	.pipe(htmlhint.reporter())
-	.pipe(lintspaces(pkg.lintspaces))
+	.pipe(lintspaces(LINTSPACES))
 	.pipe(lintspaces.reporter());
 
 // Сборка CSS
@@ -40,80 +55,47 @@ const css = () => src('src/less/style.less')
 		require('autoprefixer'),
 		require('cssnano')
 	]))
-	.pipe(dest('build/css'));
+	.pipe(dest(`${DEST}/css`));
 
 // Тестирование CSS
 const cssTest = () => src('src/less/**/*.less')
-	.pipe(stylelint({
-		reporters: [
-			{
-				console: true,
-				formatter: 'string'
-			}
-		]
-	}))
-	.pipe(lintspaces(pkg.lintspaces))
+	.pipe(stylelint(STYLELINT))
+	.pipe(lintspaces(LINTSPACES))
 	.pipe(lintspaces.reporter());
 
 // Сборка JS
 const js = () => src('src/js/script.js')
 	.pipe(require('vinyl-named')())
-	.pipe(require('webpack-stream')({
-		mode: 'production',
-		module: {
-			rules: [
-				{
-					test: /\.js$/,
-					use: {
-						loader: 'babel-loader',
-						options: pkg.babel
-					}
-				}
-			]
-		},
-		optimization: {
-			minimize:
-				true
-		}
-	}, require('webpack')))
-	.pipe(dest('build/js'));
+	.pipe(require('webpack-stream')(WEBPACK, require('webpack')))
+	.pipe(dest(`${DEST}/js`));
 
 // Тестирование JS
 const jsTest = () => src(['gulpfile.js', 'src/js/**/.js'])
-	.pipe(eslint({
-		fix: false
-	}))
+	.pipe(eslint(ESLINT))
 	.pipe(eslint.format())
-	.pipe(lintspaces(pkg.lintspaces))
+	.pipe(lintspaces(LINTSPACES))
 	.pipe(lintspaces.reporter());
 
 // Оптимизация изображений
 const img = () => src('source/img/**/*.{svg,png,jpg}')
 	.pipe(imagemin([
-		imagemin.svgo(config.svgo),
+		imagemin.svgo(SVGO),
 		imagemin.optipng(),
-		require('imagemin-jpegoptim')({
-			max: 80,
-			progressive: true
-		})
+		require('imagemin-jpegoptim')(JPEGOPTIM)
 	]))
-	.pipe(dest('build/img'))
-	.pipe(webp({
-		quality: 80
-	}))
-	.pipe(dest('build/img'));
+	.pipe(dest(`${DEST}/img`))
+	.pipe(webp(WEBP))
+	.pipe(dest(`${DEST}/img`));
 
 // Сборка спрайта
 const sprite = () => src('src/sprite/**/*.svg')
-	.pipe(imagemin([imagemin.svgo(config.svgo)]))
-	.pipe(svgstore({
-		inlineSvg: true
-	}))
-	.pipe(dest('build/img'));
+	.pipe(imagemin([imagemin.svgo(SVGO)]))
+	.pipe(svgstore(SVGSTORE))
+	.pipe(dest(`${DEST}/img`));
 
 // Копирование не нуждающихся в обработке исходников в билд
 const copy = () => src('src/as-is/**/*.*')
-	.pipe(dest('build'));
+	.pipe(dest(DEST));
 
 // Перезагрузка страницы в браузере
 const reload = (done) => {
@@ -123,12 +105,7 @@ const reload = (done) => {
 
 // Запуск сервера со слежением
 const server = () => {
-	browserSync.init({
-		cors: true,
-		notify: false,
-		server: 'build',
-		ui: false
-	});
+	browserSync.init(SERVER);
 
 	watch('src/twig/**/*.twig', series(htmlTest, html, reload));
 	watch('src/less/**/*.less', series(cssTest, css, reload));
@@ -139,7 +116,7 @@ const server = () => {
 };
 
 // Очистка каталога билда перед сборкой
-const clean = () => require('del')('build');
+const clean = () => require('del')(DEST);
 
 const test = parallel(htmlTest, cssTest, jsTest);
 const build = series(parallel(test, clean), parallel(html, css, js, img, sprite, copy));
