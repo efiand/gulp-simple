@@ -77,7 +77,7 @@ const jsTest = () => src(['gulpfile.js', 'src/js/**/.js'])
 	.pipe(lintspaces.reporter());
 
 // Оптимизация изображений
-const img = () => src('source/img/**/*.{svg,png,jpg}')
+const img = () => src('src/img/**/*.{svg,png,jpg}')
 	.pipe(imagemin([
 		imagemin.svgo(SVGO),
 		imagemin.optipng(),
