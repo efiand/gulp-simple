@@ -19,17 +19,17 @@ export default class Pixelperfect {
 		document.body.insertAdjacentElement('beforeend', this._el);
 		this._managePP();
 
-		document.addEventListener(`keydown`, this._keydownHandler);
+		document.addEventListener('keydown', this._keydownHandler);
 	}
 
 	_managePP() {
 		if (this._isPP) {
-			ppEl.classList.add(PP_CLASS);
+			this._el.classList.add(PP_CLASS);
 		} else {
-			ppEl.classList.remove(PP_CLASS);
+			this._el.classList.remove(PP_CLASS);
 		}
 
-		localStorage.setItem(`pp`, Number(this._isPP));
+		localStorage.setItem('pp', Number(this._isPP));
 	}
 
 	_movePP(offset) {
@@ -44,12 +44,12 @@ export default class Pixelperfect {
 		}
 		evt.preventDefault();
 
-		if (evt.code === `KeyP`) {
+		if (evt.code === 'KeyP') {
 			this._isPP = !this._isPP;
 			managePP();
-		} else if (this._isPP && evt.code === `ArrowUp`) {
+		} else if (this._isPP && evt.code === 'ArrowUp') {
 			movePP(-1);
-		} else if (this._isPP && evt.code === `ArrowDown`) {
+		} else if (this._isPP && evt.code === 'ArrowDown') {
 			movePP(1);
 		}
 	}
