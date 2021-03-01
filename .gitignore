@@ -7,6 +7,5 @@ __MACOS*
 build
 node_modules
 npm-debug.*
-public
+pixelperfect
 Thumbs.db
-vendor

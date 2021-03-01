@@ -3,6 +3,7 @@ const { src, dest, watch, series, parallel } = require('gulp');
 const {
 	htmlhint,
 	lintspaces,
+	data,
 	twig,
 	htmlmin,
 	w3cHtmlValidator,
@@ -32,8 +33,24 @@ const {
 	WEBPACK
 } = require('pineglade-config').gulp;
 
+const { IS_DEV = 0 } = process.env;
+const LESS_SRC = ['src/less/style.less'];
+if (IS_DEV) {
+	LESS_SRC.push('src/less/dev.less');
+}
+const JS_SRC = ['src/js/script.js'];
+if (IS_DEV) {
+	JS_SRC.push('src/js/dev.js');
+}
+
 // Сборка HTML
 const html = () => src('src/twig/pages/**/*.twig')
+	.pipe(data((file) => {
+		return {
+			IS_DEV,
+			page: file.path.replace(/\\/g, '/').replace(/^.*?twig\/pages\/(.*)\.twig$/, '$1')
+		};
+	}))
 	.pipe(twig())
 	.pipe(htmlmin(HTMLMIN))
 	.pipe(dest(DEST))
@@ -48,7 +65,7 @@ const htmlTest = () => src('src/twig/**/*.twig')
 	.pipe(lintspaces.reporter());
 
 // Сборка CSS
-const css = () => src('src/less/style.less')
+const css = () => src(LESS_SRC)
 	.pipe(less())
 	.pipe(postcss([
 		require('mqpacker'),
@@ -64,7 +81,7 @@ const cssTest = () => src('src/less/**/*.less')
 	.pipe(lintspaces.reporter());
 
 // Сборка JS
-const js = () => src('src/js/script.js')
+const js = () => src(JS_SRC)
 	.pipe(require('vinyl-named')())
 	.pipe(require('webpack-stream')(WEBPACK, require('webpack')))
 	.pipe(dest(`${DEST}/js`));
