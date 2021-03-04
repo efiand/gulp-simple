@@ -12,6 +12,8 @@ export default class Pixelperfect {
 	}
 
 	init() {
+		this._el.style.setProperty('--pp-img', this._bgValue);
+
 		if (!this._offsets[this._page]) {
 			this._offsets[this._page] = 0;
 			localStorage.setItem('ppOffsets', JSON.stringify(this._offsets));
@@ -33,9 +35,9 @@ export default class Pixelperfect {
 	}
 
 	_movePP(offset) {
-		this._ppOffsets[this._page] += offset;
-		localStorage.setItem('ppOffsets', JSON.stringify(this._ppOffsets));
-		this._el.style.setProperty('--pp-offset', `${this._ppOffsets[this._page]}px`);
+		this._offsets[this._page] += offset;
+		localStorage.setItem('ppOffsets', JSON.stringify(this._offsets));
+		this._el.style.setProperty('--pp-offset', `${this._offsets[this._page]}px`);
 	}
 
 	_keydownHandler(evt) {
@@ -46,11 +48,11 @@ export default class Pixelperfect {
 
 		if (evt.code === 'KeyP') {
 			this._isPP = !this._isPP;
-			managePP();
+			this._managePP();
 		} else if (this._isPP && evt.code === 'ArrowUp') {
-			movePP(-1);
+			this._movePP(-1);
 		} else if (this._isPP && evt.code === 'ArrowDown') {
-			movePP(1);
+			this._movePP(1);
 		}
 	}
 }
