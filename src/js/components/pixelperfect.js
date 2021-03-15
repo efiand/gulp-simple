@@ -1,9 +1,9 @@
 const PP_CLASS = 'pixelperfect';
 
 export default class Pixelperfect {
-	constructor({page, bgValue = 'none'}) {
+	constructor({page, bgValue = 'none', container = document.documentElement}) {
 		this._page = page;
-		this._el = document.createElement('div');
+		this._container = container;
 		this._isPP = Boolean(Number(localStorage.getItem('pp') || 0));
 		this._bgValue = bgValue.replace('{page}', page);
 		this._offsets = JSON.parse(localStorage.getItem('ppOffsets')) || {};
@@ -12,13 +12,12 @@ export default class Pixelperfect {
 	}
 
 	init() {
-		this._el.style.setProperty('--pp-img', this._bgValue);
+		this._container.style.setProperty('--pp-img', this._bgValue);
 
 		if (!this._offsets[this._page]) {
 			this._offsets[this._page] = 0;
 			localStorage.setItem('ppOffsets', JSON.stringify(this._offsets));
 		}
-		document.body.insertAdjacentElement('beforeend', this._el);
 		this._managePP();
 
 		document.addEventListener('keydown', this._keydownHandler);
@@ -26,9 +25,9 @@ export default class Pixelperfect {
 
 	_managePP() {
 		if (this._isPP) {
-			this._el.classList.add(PP_CLASS);
+			this._container.classList.add(PP_CLASS);
 		} else {
-			this._el.classList.remove(PP_CLASS);
+			this._container.classList.remove(PP_CLASS);
 		}
 
 		localStorage.setItem('pp', Number(this._isPP));
@@ -37,7 +36,7 @@ export default class Pixelperfect {
 	_movePP(offset) {
 		this._offsets[this._page] += offset;
 		localStorage.setItem('ppOffsets', JSON.stringify(this._offsets));
-		this._el.style.setProperty('--pp-offset', `${this._offsets[this._page]}px`);
+		this._container.style.setProperty('--pp-offset', `${this._offsets[this._page]}px`);
 	}
 
 	_keydownHandler(evt) {
