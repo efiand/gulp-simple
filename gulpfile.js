@@ -35,16 +35,14 @@ const {
 
 const { IS_DEV = 0 } = process.env;
 const LESS_SRC = ['src/less/style.less'];
-if (IS_DEV) {
-	LESS_SRC.push('src/less/dev.less');
-}
 const JS_SRC = ['src/js/script.js'];
 if (IS_DEV) {
+	LESS_SRC.push('src/less/dev.less');
 	JS_SRC.push('src/js/dev.js');
 }
 
 // Сборка HTML
-const html = () => src('src/twig/pages/**/*.twig')
+const buildHTML = () => src('src/twig/pages/**/*.twig')
 	.pipe(data((file) => {
 		return {
 			IS_DEV,
@@ -58,14 +56,14 @@ const html = () => src('src/twig/pages/**/*.twig')
 	.pipe(w3cHtmlValidator.reporter());
 
 // Тестирование HTML
-const htmlTest = () => src('src/twig/**/*.twig')
+const testHTML = () => src('src/twig/**/*.twig')
 	.pipe(htmlhint(HTMLHINT))
 	.pipe(htmlhint.reporter())
 	.pipe(lintspaces(LINTSPACES))
 	.pipe(lintspaces.reporter());
 
 // Сборка CSS
-const css = () => src(LESS_SRC)
+const buildCSS = () => src(LESS_SRC)
 	.pipe(less())
 	.pipe(postcss([
 		require('mqpacker'),
@@ -75,26 +73,26 @@ const css = () => src(LESS_SRC)
 	.pipe(dest(`${DEST}/css`));
 
 // Тестирование CSS
-const cssTest = () => src('src/less/**/*.less')
+const testCSS = () => src('src/less/**/*.less')
 	.pipe(stylelint(STYLELINT))
 	.pipe(lintspaces(LINTSPACES))
 	.pipe(lintspaces.reporter());
 
 // Сборка JS
-const js = () => src(JS_SRC)
+const buildJS = () => src(JS_SRC)
 	.pipe(require('vinyl-named')())
 	.pipe(require('webpack-stream')(WEBPACK, require('webpack')))
 	.pipe(dest(`${DEST}/js`));
 
 // Тестирование JS
-const jsTest = () => src(['gulpfile.js', 'src/js/**/.js'])
+const testJS = () => src(['gulpfile.js', 'src/js/**/.js'])
 	.pipe(eslint(ESLINT))
 	.pipe(eslint.format())
 	.pipe(lintspaces(LINTSPACES))
 	.pipe(lintspaces.reporter());
 
 // Оптимизация изображений
-const img = () => src('src/img/**/*.{svg,png,jpg}')
+const buildImages = () => src('src/img/**/*.{svg,png,jpg}')
 	.pipe(imagemin([
 		imagemin.svgo(SVGO),
 		imagemin.optipng(),
@@ -105,14 +103,18 @@ const img = () => src('src/img/**/*.{svg,png,jpg}')
 	.pipe(dest(`${DEST}/img`));
 
 // Сборка спрайта
-const sprite = () => src('src/sprite/**/*.svg')
+const buildSprite = () => src('src/sprite/**/*.svg')
 	.pipe(imagemin([imagemin.svgo(SVGO)]))
 	.pipe(svgstore(SVGSTORE))
 	.pipe(dest(`${DEST}/img`));
 
 // Копирование не нуждающихся в обработке исходников в билд
-const copy = () => src('src/as-is/**/*.*')
+const copyStatic = () => src('src/as-is/**/*')
 	.pipe(dest(DEST));
+
+// Копирование файлов PP
+const copyPP = () => src('pixelperfect/**/*')
+	.pipe(dest(`${DEST}/img/pixelperfect`));
 
 // Перезагрузка страницы в браузере
 const reload = (done) => {
@@ -124,19 +126,21 @@ const reload = (done) => {
 const server = () => {
 	browserSync.init(SERVER);
 
-	watch('src/twig/**/*.twig', series(htmlTest, html, reload));
-	watch('src/less/**/*.less', series(cssTest, css, reload));
-	watch(['gulpfile.js', 'src/js/**/*.js'], series(jsTest, js, reload));
-	watch('src/img/**/*.{svg,png,jpg}', series(img, reload));
-	watch('src/sprite/**/*.svg', series(sprite, reload));
-	watch('src/as-is/**/*.*', series(copy, reload));
+	watch('src/twig/**/*.twig', series(testHTML, buildHTML, reload));
+	watch('src/less/**/*.less', series(testCSS, buildCSS, reload));
+	watch(['gulpfile.js', 'src/js/**/*.js'], series(testJS, buildJS, reload));
+	watch('src/img/**/*.{svg,png,jpg}', series(buildImages, reload));
+	watch('src/sprite/**/*.svg', series(buildSprite, reload));
+	watch('src/as-is/**/*', series(copyStatic, reload));
+	watch('pixelperfect/**/*', series(copyPP, reload));
 };
 
 // Очистка каталога билда перед сборкой
-const clean = () => require('del')(DEST);
+const cleanDest = () => require('del')(DEST);
 
-const test = parallel(htmlTest, cssTest, jsTest);
-const build = series(parallel(test, clean), parallel(html, css, js, img, sprite, copy));
+const test = parallel(testHTML, testCSS, testJS);
+const compile = parallel(buildHTML, buildCSS, buildJS, buildImages, buildSprite, copyStatic);
+const build = series(parallel(test, cleanDest), compile);
 exports.test = test;
 exports.build = build;
-exports.default = series(build, server);
+exports.default = series(build, copyPP, server);

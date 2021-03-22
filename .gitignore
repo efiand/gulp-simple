@@ -4,8 +4,8 @@
 *.log
 *.sublime*
 __MACOS*
-build
-node_modules
+build/
+node_modules/
 npm-debug.*
-pixelperfect
+pixelperfect/
 Thumbs.db
