@@ -44,12 +44,27 @@ if (IS_DEV) {
 // Сборка HTML
 const buildHTML = () => src('src/twig/pages/**/*.twig')
 	.pipe(data((file) => {
+		const page = file.path.replace(/\\/g, '/').replace(/^.*?twig\/pages\/(.*)\.twig$/, '$1');
+		const rootSrc = page.split('/');
+		rootSrc.pop();
+
 		return {
 			IS_DEV,
-			page: file.path.replace(/\\/g, '/').replace(/^.*?twig\/pages\/(.*)\.twig$/, '$1')
+			page,
+			root: rootSrc.fill('../').join('')
 		};
 	}))
-	.pipe(twig())
+	.pipe(twig({
+		filters: [
+			{
+				func(str, nbsp) {
+					// Висячие предлоги, союзы и единицы измерения
+					return str.replace(/( | |&nbsp;|\(|>){1}([№а-уА-У]{1}|\d+) /gu, `$1$2${nbsp || ' '}`); // eslint-disable-line
+				},
+				name: 'typograph'
+			}
+		]
+	}))
 	.pipe(htmlmin(HTMLMIN))
 	.pipe(dest(DEST))
 	.pipe(w3cHtmlValidator())

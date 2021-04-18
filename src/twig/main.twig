@@ -1,3 +1,5 @@
 {% from 'macro/symbol.twig' import symbol %}
 
-{% block layout %}{% endblock %}
+{% filter typograph %}
+	{% block layout %}{% endblock %}
+{% endfilter %}

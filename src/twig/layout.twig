@@ -9,12 +9,12 @@
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
 			<meta name="HandheldFriendly" content="True">
 			<meta name="format-detection" content="telephone=no">
-			<link rel="stylesheet" href="css/style.css">
-			<link rel="preload" href="fonts/roboto.woff2" as="font" crossorigin="anonymous">
-			<link rel="preload" href="fonts/roboto-bold.woff2" as="font" crossorigin="anonymous">
+			<link rel="stylesheet" href="{{ root }}css/style.css">
 			{% if IS_DEV %}
-				<link rel="stylesheet" href="css/dev.css">
+				<link rel="stylesheet" href="{{ root }}css/dev.css">
 			{% endif %}
+			<link rel="preload" href="{{ root }}fonts/roboto.woff2" as="font" crossorigin="anonymous">
+			<link rel="preload" href="{{ root }}fonts/roboto-bold.woff2" as="font" crossorigin="anonymous">
 		</head>
 		<body class="page">
 			<header class="page__header"></header>
@@ -24,9 +24,9 @@
 				{% endblock %}
 			</main>
 			<footer class="page__footer">&copy; pineglade</footer>
-			<script src="js/script.js"></script>
+			<script src="{{ root }}js/script.js"></script>
 			{% if IS_DEV %}
-				<script src="js/dev.js"></script>
+				<script src="{{ root }}js/dev.js"></script>
 			{% endif %}
 		</body>
 	</html>
