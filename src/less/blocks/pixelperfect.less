@@ -8,11 +8,19 @@ body {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	margin-top: var(--pp-offset);
-	background-image: var(--pp-img);
+	background-image: var(--pp-img-mobile);
 	background-repeat: no-repeat;
 	background-position: 50% 0;
+	transform: translate(var(--pp-offset-x), var(--pp-offset-y));
 	opacity: 0.5;
 	filter: invert(1);
 	pointer-events: none;
+
+	@media @tablet-desktop {
+		background-image: var(--pp-img-tablet);
+	}
+
+	@media @desktop {
+		background-image: var(--pp-img-desktop);
+	}
 }

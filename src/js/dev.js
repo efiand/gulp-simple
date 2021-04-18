@@ -1,9 +1,10 @@
 import Pixelperfect from './components/pixelperfect';
 
-const pageMatch = window.location.pathname.match(/^\/(.*)\.html$/);
+const [, page = 'index'] = window.location.pathname.match(/^\/(.*)\.html$/);
 
-const pixelPerfect = new Pixelperfect({
-	page: pageMatch ? pageMatch[1] : 'index',
-	bgValue: `url("img/pixelperfect/{page}.jpg")`
+new Pixelperfect({
+	page,
+	bgValue: 'url("img/pixelperfect/{page}-{breakpoint}.jpg")',
+	tabletBreakpoint: 768,
+	desktopBreakpoint: 1024
 });
-pixelPerfect.init();
